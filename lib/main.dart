@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app/FavoriteWidget.dart';
+import 'package:app/TapboxA.dart';
 
 void main() => runApp(MyApp());
 
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
         ),
         body: ListView(
           children: <Widget>[
+            TapboxA(),
             Image.asset(
               'images/lake.jpg',
               width: 600,
