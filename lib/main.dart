@@ -3,6 +3,7 @@ import 'package:app/FavoriteWidget.dart';
 import 'package:app/TapboxA.dart';
 import 'package:app/TapboxBParent.dart';
 import 'package:app/TapboxCParent.dart';
+import 'package:app/Routing.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,6 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
+    final imageSection = Image.asset(
+              'images/lake.jpg',
+              width: 600,
+              height: 240,
+              fit: BoxFit.cover,
+            );
+
     final titleSection = Container( // v tutorialu bylo bez final
       padding: const EdgeInsets.all(32),
       child: Row(
@@ -69,27 +77,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Flutter layout demo',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Flutter Test layout demo'),
-        ),
-        body: ListView(
-          children: <Widget>[
-            TapboxA(),      
-            TapboxBParent(),      
-            TapboxCParent(),      
-            Image.asset(
-              'images/lake.jpg',
-              width: 600,
-              height: 240,
-              fit: BoxFit.cover,
-            ),
-            titleSection,
-            buttonsSection,
-            textSection,
-          ],
-        )
-      ),
+      home: FirstRoute(),
       theme: new ThemeData(
         primaryColor: Colors.white,
       ),
