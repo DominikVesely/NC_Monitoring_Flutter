@@ -76,8 +76,14 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp(
-      title: 'Flutter layout demo',
-      home: FirstRoute(),
+      title: 'Flutter layout demo',      
+      
+      initialRoute: '/',
+      routes: {
+        '/': (context) => FirstRoute(),
+        '/second': (context) => SecondRoute(),
+      },
+
       theme: new ThemeData(
         primaryColor: Colors.white,
       ),
