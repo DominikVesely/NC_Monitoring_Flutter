@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 class Routes
 {
   static const String Home = MonitorList;
-  static const String Login = "/Login";
+  static const String Login = "/login";
 
-  static const String MonitorList = "/Monitors";
+  static const String MonitorList = "/monitors";
+  static const String MonitorDetail = "/monitors/:id";
 
   static void configureRoutes(Router router) {
     router.notFoundHandler = new Handler(
@@ -20,5 +21,6 @@ class Routes
     //router.define(Routes.Home, handler: homeHandler);
 
     router.define(Routes.MonitorList, handler: monitorListHandler);
+    router.define(Routes.MonitorDetail, handler: monitorDetailHandler);
   }
 }

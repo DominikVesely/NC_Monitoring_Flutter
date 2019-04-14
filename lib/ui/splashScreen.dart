@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/functions/getToken.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/config/routes.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,23 @@ class _SplashScreenState extends State<SplashScreen> {
   final int splashDuration = 2;
 
   countDownTime() async {    
-    return Timer(Duration(seconds: splashDuration), () {
+
+    return Timer(Duration(seconds: splashDuration), () async {
       SystemChannels.textInput.invokeMethod(
           'TextInput.hide'); // donuti skryti klavesnice, kdyz se swapne z jine appky          
+
+      try
+      {
+        var token = await getToken();
+
+        if (token != null && token.isNotEmpty)
+        {
+          Navigator.of(context).pushReplacementNamed(Routes.MonitorList);
+          return;
+        }
+      }
+      catch(ex) {}
+
       Navigator.of(context).pushReplacementNamed(Routes.Login);
     });
   }
@@ -49,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Container(
                   margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 30.0),
                   child: Text(
-                    "© Copyright Statement 2018",
+                    "Copyright © 2019 Neuman Company s.r.o.",
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.white,

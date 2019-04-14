@@ -1,5 +1,4 @@
 import 'package:app/common/apifunctions/requestLoginAPI.dart';
-import 'package:app/common/functions/showDialogSingleButton.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/common/widgets/ncButton.dart';
 import 'package:app/common/widgets/ncTextField.dart';

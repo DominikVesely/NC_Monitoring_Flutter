@@ -1,6 +1,5 @@
 import 'package:app/model.json/LoginModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 saveCurrentLogin(Map responseJson) async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
