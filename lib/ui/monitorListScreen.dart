@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/functions/saveLogout.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/common/widgets/ncFutureBuilder.dart';
 import 'package:app/config/application.dart';
@@ -16,7 +17,7 @@ class MonitorListScreen extends StatefulWidget {
 
 class _MonitorListScreenState extends State<MonitorListScreen> {
   Future<List<MonitorListModel>> _list;
-  Key _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+  //Key _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   Future<List<MonitorListModel>> _getData(BuildContext context) async {
     _list = requestMonitorListAPI(context);
@@ -45,7 +46,7 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
 
   Widget getListView(List<MonitorListModel> monitors) {
     return RefreshIndicator(
-      key: _refreshIndicatorKey,
+      key: widget.key,
       child: ListView.builder(
           itemCount: monitors.length,
           itemBuilder: (BuildContext context, int index) {
@@ -54,7 +55,9 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
             return new FlatButton(
               onPressed: () {
                 print(monitor.id);
-                Application.router.navigateTo(context, '/monitors/'+monitor.id, transition: TransitionType.fadeIn);
+                Application.router.navigateTo(
+                    context, '/monitors/' + monitor.id,
+                    transition: TransitionType.fadeIn);
               },
               child: Column(
                 children: <Widget>[
@@ -75,10 +78,23 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-        body: ncFutureBuilder(
+        body: Column(
+      children: <Widget>[
+        Flexible(
+          child: ncFutureBuilder(
             future: _getData(context),
             callback: (data) {
               return getListView(data);
-            }));
+            }),
+        ),
+        FlatButton(
+          child: Text("Odhlasit"),
+          onPressed: () {
+            saveLogout();
+            Application.router.navigateTo(context, Routes.Login);
+          },
+        )
+      ],
+    ));
   }
 }
