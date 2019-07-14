@@ -14,15 +14,15 @@ class MonitorListModel {
 
   MonitorListModel(
       {String id,
-        String name,
-        String statusName,
-        bool enabled,
-        int methodTypeId,
-        String url,
-        int verificationTypeId,
-        String verificationValue,
-        String timeout,
-        int scenarioId}) {
+      String name,
+      String statusName,
+      bool enabled,
+      int methodTypeId,
+      String url,
+      int verificationTypeId,
+      String verificationValue,
+      String timeout,
+      int scenarioId}) {
     this._id = id;
     this._name = name;
     this._statusName = statusName;
@@ -86,4 +86,3 @@ class MonitorListModel {
     return data;
   }
 }
-

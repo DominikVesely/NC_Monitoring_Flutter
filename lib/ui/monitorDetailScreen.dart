@@ -19,12 +19,13 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
   //Key _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   Future<MonitorDetailModel> _monitor;
+  String appBarTitle = 'Detail';
 
   Future<Null> _handleRefresh() async {
     Completer<Null> completer = new Completer<Null>();
 
     setState(() {
-      _getData(context).then((_) {
+      _getData(context).then((monitor) {        
         completer.complete();
       });
     });
@@ -33,13 +34,16 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
   }
 
   Future<MonitorDetailModel> _getData(BuildContext context) async {
-    _monitor = requestMonitorDetailAPI(context, widget.id);
+    _monitor = requestMonitorDetailAPI(context, widget.id);        
     return _monitor;
   }
 
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
+        appBar: AppBar(
+          title: Text(appBarTitle)
+        ),
         body: ncFutureBuilder(
             future: _getData(context),
             callback: (monitor) {

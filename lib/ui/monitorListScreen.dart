@@ -6,9 +6,11 @@ import 'package:app/common/widgets/ncFutureBuilder.dart';
 import 'package:app/config/application.dart';
 import 'package:app/config/routes.dart';
 import 'package:app/model.json/MonitorListModel.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:app/common/apifunctions/requestMonitorListAPI.dart';
+import 'package:app/ui/monitorListItem.dart';
 
 class MonitorListScreen extends StatefulWidget {
   @override
@@ -18,6 +20,43 @@ class MonitorListScreen extends StatefulWidget {
 class _MonitorListScreenState extends State<MonitorListScreen> {
   Future<List<MonitorListModel>> _list;
   //Key _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+
+  String textValue = 'TextValue';
+
+  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+
+  @override
+  void initState() {
+    firebaseMessaging.configure(onLaunch: (Map<String, dynamic> msg) {
+      print("onLaunch called");
+    }, onResume: (Map<String, dynamic> msg) {
+      print("onResume called");
+    }, onMessage: (Map<String, dynamic> msg) {
+      print("onMessage called");
+    });
+
+    firebaseMessaging
+        .requestNotificationPermissions(const IosNotificationSettings(
+      sound: true,
+      alert: true,
+      badge: true,
+    ));
+
+    firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print('IOS Setting Registered.');
+    });
+
+    firebaseMessaging.getToken().then((token) {
+      update(token);
+    });
+  }
+
+  update(String token) {
+    print(token);
+    textValue = token;
+    setState(() {});
+  }
 
   Future<List<MonitorListModel>> _getData(BuildContext context) async {
     _list = requestMonitorListAPI(context);
@@ -61,10 +100,8 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
               },
               child: Column(
                 children: <Widget>[
-                  new ListTile(
-                    title: new Text(monitor.name),
-                  ),
-                  new Divider(
+                  MonitorListItem(monitor: monitor),
+                  Divider(
                     height: 2.0,
                   )
                 ],
@@ -78,23 +115,27 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-        body: Column(
-      children: <Widget>[
-        Flexible(
-          child: ncFutureBuilder(
-            future: _getData(context),
-            callback: (data) {
-              return getListView(data);
-            }),
+        appBar: AppBar(
+          title: Text('Seznam monitoru'),
         ),
-        FlatButton(
-          child: Text("Odhlasit"),
-          onPressed: () {
-            saveLogout();
-            Application.router.navigateTo(context, Routes.Login);
-          },
-        )
-      ],
-    ));
+        body: Column(
+          children: <Widget>[
+            Flexible(
+              child: ncFutureBuilder(
+                  future: _getData(context),
+                  callback: (data) {
+                    return getListView(data);
+                  }),
+            ),
+            Text(textValue),
+            FlatButton(
+              child: Text("Odhlasit"),
+              onPressed: () {
+                saveLogout();
+                Application.router.navigateTo(context, Routes.Login);
+              },
+            )
+          ],
+        ));
   }
 }

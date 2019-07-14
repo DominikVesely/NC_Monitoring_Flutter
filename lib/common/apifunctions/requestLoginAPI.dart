@@ -15,7 +15,7 @@ Future<LoginModel> requestLoginAPI(
   };
 
   try {
-    final response = await NCApi.requestPOST('authenticate', data);
+    final response = await NCApi.requestJsonPOST(context, 'authenticate', data);
     final responseJson = response.result;
 
     if (response.statusCode == 200) {
@@ -30,6 +30,8 @@ Future<LoginModel> requestLoginAPI(
     }
   } catch (e) {
     print(e.toString());
+    showDialogSingleButton(context, "Unable to Login",
+          "You may have supplied an invalid 'Username' / 'Password' combination. Please try again or contact your support representative.");
   }
   return null;
 }

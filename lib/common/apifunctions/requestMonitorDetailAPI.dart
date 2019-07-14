@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 Future<MonitorDetailModel> requestMonitorDetailAPI(
     BuildContext context, String id) async {
   try {
-    final response = await NCApi.requestGET('monitors/'+id);
+    final response = await NCApi.requestGET(context, 'monitors/'+id);
 
     if (response.statusCode == 200) {
       return MonitorDetailModel.fromJson(response.result);

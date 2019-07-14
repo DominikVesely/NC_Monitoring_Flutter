@@ -9,17 +9,24 @@ FutureBuilder ncFutureBuilder({
   return FutureBuilder(
     future: future,
     builder: (BuildContext context, AsyncSnapshot snapshot) {
+      Widget result;
       switch (snapshot.connectionState) {
         case ConnectionState.none:
         case ConnectionState.waiting:
-          return new Text("loading....");
+          result = CircularProgressIndicator();
+          break;
         default:
           if (snapshot.hasError)
-            return new Text('Error: ${snapshot.error}');
+            result = Text('Error: ${snapshot.error}');
           else {
             return callback(snapshot.data);
           }
+          break;
       }
+
+      return Center(
+        child: result,
+      );
     },
   );
 }
