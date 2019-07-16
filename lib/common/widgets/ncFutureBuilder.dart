@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-typedef Widget AsyncSnapshopCallback(dynamic data);
+typedef Widget AsyncSnapshopCallback<T>(T data);
 
-FutureBuilder ncFutureBuilder({
-  Future<dynamic> future,
-  AsyncSnapshopCallback callback,
+FutureBuilder ncFutureBuilder<T>({
+  Future<T> future,
+  AsyncSnapshopCallback<T> callback,
 }) {
   return FutureBuilder(
     future: future,

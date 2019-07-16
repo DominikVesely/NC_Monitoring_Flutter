@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/common/controls/monitorListItem.dart';
 import 'package:app/common/functions/saveLogout.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/common/widgets/ncFutureBuilder.dart';
@@ -10,7 +11,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:app/common/apifunctions/requestMonitorListAPI.dart';
-import 'package:app/ui/monitorListItem.dart';
 
 class MonitorListScreen extends StatefulWidget {
   @override
@@ -48,15 +48,15 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
     });
 
     firebaseMessaging.getToken().then((token) {
-      update(token);
+      //update(token);
     });
   }
 
-  update(String token) {
-    print(token);
-    textValue = token;
-    setState(() {});
-  }
+  // update(String token) {
+  //   print(token);
+  //   textValue = token;
+  //   setState(() {});
+  // }
 
   Future<List<MonitorListModel>> _getData(BuildContext context) async {
     _list = requestMonitorListAPI(context);
@@ -116,24 +116,33 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
         appBar: AppBar(
-          title: Text('Seznam monitoru'),
+          title: Text('Monitor list'),
         ),
-        body: Column(
+        body: Column(          
           children: <Widget>[
             Flexible(
-              child: ncFutureBuilder(
+              child: ncFutureBuilder<List<MonitorListModel>>(
                   future: _getData(context),
                   callback: (data) {
                     return getListView(data);
                   }),
             ),
-            Text(textValue),
-            FlatButton(
-              child: Text("Odhlasit"),
-              onPressed: () {
-                saveLogout();
-                Application.router.navigateTo(context, Routes.Login);
-              },
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: FlatButton(
+                //color: Color(0x2196f3),
+                color: Colors.blue[400],                
+                child: Text(
+                  "Logout",
+                  style: TextStyle(
+                    color: Colors.white,
+                  )
+                  ),
+                onPressed: () {
+                  saveLogout();
+                  Application.router.navigateTo(context, Routes.Login);
+                })
             )
           ],
         ));
