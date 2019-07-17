@@ -22,5 +22,5 @@ Future<List<RecordListModel>> requestRecordListAPI(
     print(e.toString());
   }
 
-  return List<RecordListModel>();
+  return [];
 }
