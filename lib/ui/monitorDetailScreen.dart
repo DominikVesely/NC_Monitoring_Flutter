@@ -1,32 +1,31 @@
 import 'dart:async';
 
 import 'package:app/common/apifunctions/requestMonitorDetailAPI.dart';
-import 'package:app/common/apifunctions/requestRecordListAPI.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/common/widgets/MonitorDetailFormWidget.dart';
 import 'package:app/common/widgets/RecordsListWidget.dart';
 import 'package:app/common/widgets/ncFutureBuilder.dart';
 import 'package:app/model.json/MonitorDetailModel.dart';
-import 'package:app/model.json/RecordListModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class MonitorDetailScreen extends StatefulWidget {
-  MonitorDetailScreen({Key key, @required this.id}) : super(key: key);
+  MonitorDetailScreen({Key key, @required this.monitorId}) : super(key: key);
 
-  final String id;
-  final String appBarTitle = 'Detail';
+  final String monitorId;
+  final String appBarTitle = 'Monitor - detail';
   final int topRecords = 30;
 
   @override
-  _MonitorDetailScreenState createState() => _MonitorDetailScreenState();
+  _MonitorDetailScreenState createState() => _MonitorDetailScreenState(monitorId);
 }
 
 class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
+  _MonitorDetailScreenState(this.monitorId);
   //Key _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
-  Future<MonitorDetailModel> _monitor;
-  Future<List<RecordListModel>> _records;
+  final String monitorId;
+  Future<MonitorDetailModel> _monitor;  
 
   @override
   void initState() {
@@ -48,27 +47,8 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
   }
 
   Future<MonitorDetailModel> _getDetailData(BuildContext context) async {
-    _monitor = requestMonitorDetailAPI(context, widget.id);
+    _monitor = requestMonitorDetailAPI(context, monitorId);
     return _monitor;
-  }
-
-  Future<Null> _recordsHandleRefresh() async {
-    Completer<Null> completer = new Completer<Null>();
-
-    setState(() {
-      _getRecordsData(context).then((monitor) {
-        completer.complete();
-      });
-    });
-
-    completer.future;
-  }
-
-  Future<List<RecordListModel>> _getRecordsData(BuildContext context) async {
-    if (_records == null) {
-      _records = requestRecordListAPI(context, widget.id, widget.topRecords);
-    }
-    return _records;
   }
 
   @override
@@ -107,15 +87,7 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
                       ),
                     );
                   }),
-              ncFutureBuilder<List<RecordListModel>>(
-                  future: _getRecordsData(context),
-                  callback: (records) {
-                    return RefreshIndicator(
-                      key: widget.key,
-                      onRefresh: _recordsHandleRefresh,
-                      child: RecordsListWidget(records),
-                    );
-                  }),
+              RecordsListWidget(30, monitorId: monitorId)
             ],
           ),
         ),

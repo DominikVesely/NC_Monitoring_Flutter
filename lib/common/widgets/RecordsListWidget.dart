@@ -1,42 +1,52 @@
+import 'package:app/common/apifunctions/requestRecordListAPI.dart';
 import 'package:app/common/utils/DateTimeFormatter.dart';
-import 'package:app/model.json/RecordListModel.dart';
+import 'package:app/common/widgets/RefreshListWidget.dart';
+import 'package:app/config/application.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
 class RecordsListWidget extends StatelessWidget {
-  RecordsListWidget(this.records);
+  RecordsListWidget(this.top, {this.monitorId});
 
-  final List<RecordListModel> records;
+  final String monitorId;
+  final int top;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: records.length,
-        itemBuilder: (BuildContext context, int index) {
-          var record = records[index];
+    return RefreshListWidget(
+      getData: (context) => requestRecordListAPI(context, monitorId, top),
+      listItem: (context, record, index) {
 
-          return Column(
+        Widget base = Container(
+          padding: EdgeInsets.fromLTRB(5, 5, 8, 8),
+          child: Wrap(
+            runSpacing: 10,
             children: <Widget>[
-              Container(
-                padding: EdgeInsets.fromLTRB(5, 5, 8, 8),
-                child: Wrap(
-                  runSpacing: 10,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(DateTimeFormatter.shortDateTime(record.startDate)),
-                        Text(DateTimeFormatter.shortDateTime(record.endDate)),
-                      ],
-                    ),
-                    Text(record.note),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(DateTimeFormatter.shortDateTime(record.startDate)),
+                  Text(DateTimeFormatter.shortDateTime(record.endDate)),
+                ],
               ),
-              Divider(
-                height: 2.0,
-              )
+              Text(record.note),
             ],
+          ),
+        );
+
+        if (monitorId == null) {
+          return FlatButton(
+            onPressed: () {
+              Application.router.navigateTo(
+                  context, '/monitors/' + record.monitorId,
+                  transition: TransitionType.fadeIn);
+            },
+            child: base,
           );
-        });
+        }
+
+        return base;
+      },
+    );
   }
 }

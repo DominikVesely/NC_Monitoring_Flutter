@@ -7,8 +7,15 @@ import 'package:flutter/material.dart';
 
 Future<List<RecordListModel>> requestRecordListAPI(
     BuildContext context, String monitorId, int top) async {
-  try {
-    final response = await NCApi.requestGET(context, 'records/forMonitorLoad?monitorId=$monitorId&take=$top');
+  try {    
+    NCApiResult response;
+    final String sort = '[{"selector": "StartDate", "desc": 1}]';
+
+    if (monitorId == null) {      
+      response = await NCApi.requestGET(context, 'records/load?take=$top&sort=$sort');
+    } else {
+      response = await NCApi.requestGET(context, 'records/forMonitorLoad?monitorId=$monitorId&take=$top&sort=$sort');
+    }
 
     if (response.statusCode == 200) {
       Iterable list = response.result ?? [];
