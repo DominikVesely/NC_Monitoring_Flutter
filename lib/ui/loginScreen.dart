@@ -17,19 +17,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 50),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ncTextField('Username', controller: _usernameController),
             ncTextField('Password',
-                controller: _passwordController, obscureText: true),
+                controller: _passwordController, 
+                obscureText: true, 
+                onSubmitted: (value) => requestLoginAPI(context, _usernameController.text, _passwordController.text)
+            ),                
             ncButton('Login',
-                onPressed: () => {
-                    //   showDialogSingleButton(context, 'Title',
-                    //       '${_usernameController.text}\n${_passwordController.text}')
-                    //SystemChannels.textInput.invokeMethod('TextInput.hide');                                                  
-                        requestLoginAPI(context, _usernameController.text, _passwordController.text)
-                    }),
+                onPressed: () => requestLoginAPI(context, _usernameController.text, _passwordController.text)),
           ],
         ),
       ),
