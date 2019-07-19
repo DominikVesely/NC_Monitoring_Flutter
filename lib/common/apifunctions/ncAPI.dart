@@ -3,95 +3,175 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/common/functions/getToken.dart';
+import 'package:app/common/functions/logout.dart';
+import 'package:app/common/functions/showDialogSingleButton.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:app/common/utils/StringUtils.dart';
 import 'package:http/http.dart';
 
-import 'package:app/config/routes.dart';
-import 'package:app/common/functions/saveLogout.dart';
+enum HttpMethod { GET, POST, PUT, DELETE }
+enum HttpRequestDataType { Form, Json }
 
 class NCApi {
-  //static final Sring URL = 'https://monitoring.ncompany.cz/api/';
+  
   static Url apiUrl() {
     //10.0.2.2
     return new Url("https://monitoring.ncompany.cz/api/");
     //return new Url("https://10.0.2.2:64966/api/");
   }
 
+  static Future<T> requestModelPUT<T>(BuildContext context, String path, {
+    @required String key,
+    @required T Function(Map) fromJson,
+    Map<String, dynamic> data}) async {
+      
+      return await requestModelFromJson(context, path, fromJson: fromJson,
+        method: HttpMethod.PUT,
+        requestDataType: HttpRequestDataType.Form,
+        data: {
+          'key': key,
+          'values': json.encode(data),
+        }); 
+  }
+
+  static Future<List<T>> requestModelFromJsonList<T>(BuildContext context, String path, {@required T Function(Map) fromJson,
+      HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data}) async {
+
+        return _requestModel(context, path, requestDataType, method, data, null, (response) {
+          if (validateResponse(context, response)) {
+            final jsonResponse = jsonDecode(response.body);
+            Iterable list = jsonResponse;
+
+            return list.map((model) => fromJson(model)).toList();
+          }
+
+          return [];
+        });
+  }
+
+  static Future<T> requestModelFromJson<T>(BuildContext context, String path, {@required T Function(Map) fromJson,
+      HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data}) async {
+
+        return _requestModel(context, path, requestDataType, method, data, fromJson, null);
+  }
+
+  static Future<T> requestModelFromResponse<T>(BuildContext context, String path, { @required T Function(Response) fromResponse,
+      HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data}) async {
+
+        return _requestModel(context, path, requestDataType, method, data, null, fromResponse);
+  }
+
+  static Future<T> _requestModel<T>(BuildContext context, String path, 
+    HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data,
+    T Function(Map) fromJson, 
+    T Function(Response) fromResponse) async {
+
+        if (fromJson == null && fromResponse == null) {
+          throw new Exception("One parameter of 'fromJson' or 'onResponse' or 'fromJsonList' can not be null.");
+        }
+
+    try {
+      final url = apiUrl().append(path).toString();      
+      final headers = await getHeaders(requestDataType);
+      
+      Response response;
+
+      dynamic body;
+
+      if (data != null) {
+
+        switch (requestDataType) {          
+            case HttpRequestDataType.Json:
+              body = json.encode(data);
+              break;
+            default: 
+              body = data;
+              break;
+        }
+      }
+
+      switch (method) {
+        case HttpMethod.POST:
+          response = await http.post(url, headers: headers, body: body);
+          break;
+        case HttpMethod.PUT:
+          response = await http.put(url, headers: headers, body: body);
+          break;
+        case HttpMethod.DELETE:
+          response = await http.delete(url, headers: headers);
+          break;
+          
+        default:
+          response = await http.get(url, headers: headers);
+          break;
+      }
+
+      if (fromResponse != null) {
+        return fromResponse(response);
+      }
+
+      if (validateResponse(context, response)) {
+        final jsonResponse = jsonDecode(response.body);
+        return fromJson(jsonResponse);
+      }
+
+    } catch (e) {      
+      showDialogSingleButton(context, "Application error", "Something went wrong.");
+    }
+
+    // if (T is List<dynamic>) { // nefunguje
+    //   return [] as T;
+    // }
+
+    return null;
+}
+
+  static bool validateResponse(BuildContext context, Response response) {
+    final statusCode = response.statusCode;
+
+      if (statusCode <= 299) {
+        if (response.body != null && response.body.trim() != '') {
+          // success
+          return true;          
+        }
+      } else if (statusCode == 401) {
+        // Unauthenticated
+        showDialogSingleButton(context, "Unauthenticated", "You have been logged out due to inactivity",
+          buttonLabel: 'Login',
+          onPressed: () => logout(context));
+      } else {
+        // Error
+        showDialogSingleButton(context, "Bad request", "Something went wrong.");
+      }
+
+      return false;
+  }
+
   static Future<String> getAuthorizationHeader() async {
     return 'Bearer ' + (await getToken());
   }
 
-  static Future<NCApiResult> requestGET(
-      BuildContext context, String path) async {
-    final response = await http.get(apiUrl().append(path).toString(), headers: {
-      HttpHeaders.authorizationHeader: await getAuthorizationHeader(),
-    });
-
-    ifUnauthorizedThanRouteToHome(context, response);
-
-    return NCApiResult(response);
-  }
-
-  static Future<NCApiResult> requestPUT(BuildContext context, String path,
-      String id, Map<String, dynamic> data) async {
-    final body = {
-      'key': id,
-      'values': json.encode(data),
+  static Future<Map<String, String>> getHeaders(HttpRequestDataType requestDataType) async {
+    var headers = {      
+      HttpHeaders.authorizationHeader: await getAuthorizationHeader()
     };
-    final response =
-        await http.put(apiUrl().append(path).toString(), body: body, headers: {
-      "Accept": "application/x-www-form-urlencoded",
-      "Content-type": "application/x-www-form-urlencoded",
-      HttpHeaders.authorizationHeader: await getAuthorizationHeader(),
-    });
 
-    ifUnauthorizedThanRouteToHome(context, response);
+    switch (requestDataType) {      
+      case HttpRequestDataType.Json:
+        headers["Accept"] = "application/json";
+        headers["Content-type"] = "application/json";
+        break;
 
-    return NCApiResult(response);
+      default:
+        headers["Accept"] = "application/x-www-form-urlencoded";
+        headers["Content-type"] = "application/x-www-form-urlencoded";
+    }
+
+    return headers;
   }
 
-  static Future<NCApiResult> requestPOST(
-      BuildContext context, String path, Map<String, dynamic> data) async {
-    final response = await http.post(apiUrl().append(path).toString(),
-        body: json.encode(data),
-        headers: {
-          "Accept": "application/x-www-form-urlencoded",
-          "Content-type": "application/x-www-form-urlencoded",
-          HttpHeaders.authorizationHeader: await getAuthorizationHeader(),
-        });
-
-    ifUnauthorizedThanRouteToHome(context, response);
-
-    return NCApiResult(response);
-  }
-
-  static Future<NCApiResult> requestJsonPOST(
-      BuildContext context, String path, Map<String, dynamic> data) async {
-    final response = await http.post(apiUrl().append(path).toString(),
-        body: json.encode(data),
-        headers: {
-          "Accept": "application/json",
-          "Content-type": "application/json",
-          HttpHeaders.authorizationHeader: await getAuthorizationHeader(),
-        });
-
-    ifUnauthorizedThanRouteToHome(context, response);
-
-    return NCApiResult(response);
-  }
-
-  static bool ifUnauthorizedThanRouteToHome(
-      BuildContext context, Response response) {
-    // if (response.statusCode == 401) {
-    //   saveLogout();
-    //   Navigator.of(context).pushReplacementNamed(Routes.Home);
-    //   return true;
-    // }
-    return false;
-  }
 }
 
 class Url {
@@ -120,12 +200,12 @@ class Url {
 }
 
 class NCApiResult {
-  final int statusCode;
-  final dynamic result;
+  // final int statusCode;
+  // final dynamic result;
 
-  NCApiResult._(this.statusCode, this.result);
+  // NCApiResult._(this.statusCode, this.result);
 
-  factory NCApiResult(Response response) {
-    return NCApiResult._(response.statusCode, jsonDecode(response.body));
-  }
+  // factory NCApiResult(Response response) {
+  //   return NCApiResult._(response.statusCode, jsonDecode(response.body));
+  // }
 }

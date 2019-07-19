@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:app/common/apifunctions/ncAPI.dart';
 import 'package:app/common/functions/saveCurrentLogin.dart';
@@ -14,24 +15,29 @@ Future<LoginModel> requestLoginAPI(
     'password': password,
   };
 
-  try {
-    final response = await NCApi.requestJsonPOST(context, 'authenticate', data);
-    final responseJson = response.result;
+    return await NCApi.requestModelFromResponse(context, 'authenticate', 
+      method: HttpMethod.POST,
+      requestDataType: HttpRequestDataType.Json,
+      data: data,
+      fromResponse: (response) {
+        try {    
+          if (response.statusCode == 200) {
+            final responseJson = jsonDecode(response.body);
+            saveCurrentLogin(responseJson);
 
-    if (response.statusCode == 200) {
-      saveCurrentLogin(responseJson);
+            Navigator.of(context).pushReplacementNamed(Routes.Home);
+            return LoginModel.fromJson(responseJson);
 
-      Navigator.of(context).pushReplacementNamed(Routes.Home);
-      return LoginModel.fromJson(responseJson);
-    } else {
-      saveCurrentLogin(responseJson);
-      showDialogSingleButton(context, "Unable to Login",
-          "You may have supplied an invalid 'Username' / 'Password' combination. Please try again or contact your support representative.");
-    }
-  } catch (e) {
-    print(e.toString());
-    showDialogSingleButton(context, "Unable to Login",
-          "You may have supplied an invalid 'Username' / 'Password' combination. Please try again or contact your support representative.");
-  }
-  return null;
+          } else {
+            saveCurrentLogin(null);
+            showDialogSingleButton(context, "Unable to Login",
+                "You may have supplied an invalid 'Username' / 'Password' combination. Please try again or contact your support representative.");
+          }
+        } catch (e) {
+          showDialogSingleButton(context, "Application error", "Something went wrong.");
+        }
+
+        return null;
+
+      });
 }
