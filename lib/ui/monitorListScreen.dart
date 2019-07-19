@@ -1,9 +1,8 @@
+import 'package:app/common/functions/logout.dart';
 import 'package:app/common/functions/saveLogout.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/common/widgets/MonitorsListWidget.dart';
 import 'package:app/common/widgets/RecordsListWidget.dart';
-import 'package:app/config/application.dart';
-import 'package:app/config/routes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -50,11 +49,8 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
                               style: TextStyle(
                                 color: Colors.white,
                               )),
-                          onPressed: () {
-                            saveLogout();
-                            Application.router
-                                .navigateTo(context, Routes.Login);
-                          }))
+                          onPressed: () => logout(context)
+                        ))
                 ],
               ),
               RecordsListWidget(50),

@@ -23,10 +23,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
       try
       {
-        var token = await getToken();
+        var token = await getToken();   
 
         if (token != null && token.isNotEmpty)
-        {
+        {          
+          Navigator.of(context).pushReplacementNamed(Routes.Login);
           Navigator.of(context).pushReplacementNamed(Routes.MonitorList);
           return;
         }
