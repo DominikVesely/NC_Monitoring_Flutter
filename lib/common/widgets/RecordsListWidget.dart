@@ -35,8 +35,8 @@ class RecordsListWidget extends StatelessWidget {
         );
 
         if (monitorId == null) {
-          return FlatButton(
-            onPressed: () {
+          return GestureDetector(
+            onTap: () {
               Application.router.navigateTo(
                   context, '/monitors/' + record.monitorId,
                   transition: TransitionType.fadeIn);
