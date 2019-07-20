@@ -2,6 +2,8 @@ import 'package:app/common/apifunctions/requestMonitorMethodListAPI.dart';
 import 'package:app/common/apifunctions/requestMonitorVerificationListAPI.dart';
 import 'package:app/common/apifunctions/requestScenarioListAPI.dart';
 import 'package:app/common/apifunctions/updateMonitorDetailAPI.dart';
+import 'package:app/common/functions/showDurationPicker.dart';
+import 'package:app/common/functions/showSnackBar.dart';
 import 'package:app/common/utils/DurationFormatter.dart';
 import 'package:app/model.json/MonitorDetailModel.dart';
 import 'package:app/model.json/MonitorMethodModel.dart';
@@ -75,6 +77,7 @@ class _MonitorDetailFormWidgetState extends State<MonitorDetailFormWidget> {
     controllers['Timeout'].text = DurationFormatter.ToTimeSpan(model.timeout);
 
   if (!updateMonitor) {
+    showSnackBar(context, text: 'Monitor was not updated.', type: SnackBarType.Error);
     return;
   }
 
@@ -88,23 +91,36 @@ class _MonitorDetailFormWidgetState extends State<MonitorDetailFormWidget> {
       monitor.scenarioId = model.scenarioId;
       monitor.verificationTypeId = model.verificationTypeId;      
     });
+
+    showSnackBar(context, text: 'Monitor was updated.', type: SnackBarType.Success);
   }
 
-  TextFormField createTextField(String name, String label, String value, {String Function(String) validator}) {
+  Widget createTextField(String name, String label, String value, {String Function(String) validator, bool readOnly = false, void Function(TextEditingController) onTap}) {
     var controller = controllers[name];
 
     if (controller.text.isEmpty) {
       controller.text = value;
     }
 
-    return TextFormField(
-      decoration: InputDecoration(labelText: label),
-      validator: validator,
-      keyboardType: TextInputType.url,
-      onFieldSubmitted: (text) {        
-        updateMonitorValue(name, text);        
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        onTap(controller);
+        print('tap');
       },
-      controller: controller,
+      child: TextFormField(
+        enabled: onTap == null,
+        readOnly: readOnly,
+        decoration: InputDecoration(labelText: label),
+        validator: validator,
+        keyboardType: TextInputType.url,           
+        onFieldSubmitted: (text) { 
+          if (validator == null || validator(text) == null) {
+            updateMonitorValue(name, text);        
+          }                    
+        },
+        controller: controller,
+      ),
     );
   }
 
@@ -185,7 +201,19 @@ class _MonitorDetailFormWidgetState extends State<MonitorDetailFormWidget> {
 
           createTextField('VerificationValue', 'Verification value', monitor.verificationValue),
           
-          createTextField('Timeout', 'Timeout', DurationFormatter.ToTimeSpan(monitor.timeout)),          
+          createTextField('Timeout', 'Timeout', 
+            DurationFormatter.ToTimeSpan(monitor.timeout),            
+            onTap: (controller) {
+              showDurationPicker(context,
+                initValue: monitor.timeout, 
+                onConfirm: (duration) {
+                  final value = DurationFormatter.ToTimeSpan(duration);
+                  controller.text = value;                       
+                  updateMonitorValue('Timeout', value);
+                }
+              );
+            }
+          ),
         ],
       )),
     );
