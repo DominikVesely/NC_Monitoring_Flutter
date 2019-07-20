@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 typedef Widget AsyncSnapshopCallback<T>(T data);
 
-FutureBuilder ncFutureBuilder<T>({
+FutureBuilder<T> ncFutureBuilder<T>({
   Future<T> future,
   AsyncSnapshopCallback<T> callback,
 }) {
@@ -10,8 +10,7 @@ FutureBuilder ncFutureBuilder<T>({
     future: future,
     builder: (BuildContext context, AsyncSnapshot snapshot) {
       Widget result;
-      switch (snapshot.connectionState) {
-        case ConnectionState.none:
+      switch (snapshot.connectionState) {        
         case ConnectionState.waiting:
           result = CircularProgressIndicator();
           break;
