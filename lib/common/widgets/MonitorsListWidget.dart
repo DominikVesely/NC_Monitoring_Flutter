@@ -1,5 +1,5 @@
 import 'package:app/common/apifunctions/requestMonitorListAPI.dart';
-import 'package:app/common/controls/monitorListItem.dart';
+import 'package:app/common/widgets/MonitorListItem.dart';
 import 'package:app/common/widgets/RefreshListWidget.dart';
 import 'package:app/config/application.dart';
 import 'package:fluro/fluro.dart';
