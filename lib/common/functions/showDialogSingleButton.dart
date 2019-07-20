@@ -15,8 +15,10 @@ Future<T> showDialogSingleButton<T>(BuildContext context, String title, String m
     context: context,    
     builder: (BuildContext context) {
       // return object of type Dialog
-      return AlertDialog(
-        title: new Text(title),
+      return WillPopScope(
+        onWillPop: () => null, // nelze zavrit dialog pomoci back button
+        child: AlertDialog(        
+        title: new Text(title),        
         content: new Text(message),
         actions: <Widget>[
           // usually buttons at the bottom of the dialog
@@ -32,6 +34,7 @@ Future<T> showDialogSingleButton<T>(BuildContext context, String title, String m
             },
           ),
         ],
+      ),
       );
     },
   );
