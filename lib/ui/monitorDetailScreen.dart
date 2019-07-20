@@ -34,16 +34,10 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
     super.initState();
   }
 
-  Future<Null> _detailHandleRefresh() async {
-    Completer<Null> completer = new Completer<Null>();
-
+  Future _detailHandleRefresh() async {
     setState(() {
-      _getDetailData(context).then((monitor) {
-        completer.complete();
-      });
+      _monitor = _getDetailData(context);
     });
-
-    completer.future;
   }
 
   Future<MonitorDetailModel> _getDetailData(BuildContext context) async {
