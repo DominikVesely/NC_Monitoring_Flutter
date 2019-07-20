@@ -25,15 +25,21 @@ class _RefreshListWidgetState<T> extends State<RefreshListWidget> {
   
   final IndexedItemBuilder<T> listItem;
   final FutureByContext<T> getData;
+
+  Future<List<T>> _data;
   //Future<List<T>> dataFuture;  
 
-  Future<Null> _handleRefresh() async {
-    Completer<Null> completer = new Completer<Null>();
+  @override
+  void initState() {
+    _data = getData(context);
+    super.initState();
+  }
+
+  Future _handleRefresh() async {
+    Completer<void> completer = new Completer<Null>();
 
     setState(() {
-      getData(context).then((_) {
-        completer.complete();
-      });
+      _data = getData(context);      
     });
 
     completer.future;
@@ -42,7 +48,7 @@ class _RefreshListWidgetState<T> extends State<RefreshListWidget> {
   @override
   Widget build(BuildContext context) {
     return ncFutureBuilder<List<T>>(
-        future: getData(context),        
+        future: _data,        
         callback: (data) {
 
           Widget child;

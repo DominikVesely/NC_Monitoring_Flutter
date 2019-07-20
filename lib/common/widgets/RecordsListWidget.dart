@@ -5,8 +5,18 @@ import 'package:app/config/application.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
-class RecordsListWidget extends StatelessWidget {
+class RecordsListWidget extends StatefulWidget {
   RecordsListWidget(this.top, {this.monitorId});
+
+  final String monitorId;
+  final int top;
+
+  @override
+  _RecordsListWidgetState createState() => _RecordsListWidgetState(top, monitorId: monitorId);
+}
+
+class _RecordsListWidgetState extends State<RecordsListWidget> {
+  _RecordsListWidgetState(this.top, {this.monitorId});
 
   final String monitorId;
   final int top;
