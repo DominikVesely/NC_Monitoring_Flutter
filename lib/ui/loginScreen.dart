@@ -12,13 +12,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void onSubmit() {    
+  Future testFuture;
+
+  @override
+  initState() {
+    testFuture = null;
+    super.initState();    
+  }
+
+  void onSubmit() {        
     if (_formKey.currentState.validate()) {
       String username = _usernameController.text;
       String password = _passwordController.text;      
-      requestLoginAPI(context, username, password);
+
+      setState(() {    
+        testFuture = requestLoginAPI(context, username, password);
+      });
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +40,36 @@ class _LoginScreenState extends State<LoginScreen> {
         children: <Widget>[
           Container(
             decoration: new BoxDecoration(
-              color: Colors.black
-                // image: new DecorationImage(
-                //     fit: BoxFit.cover,
-                //     image: new NetworkImage(
-                //         'https://i.pinimg.com/originals/c2/47/e9/c247e913a0214313045a8a5c39f8522b.jpg')
-                // )
+              color: Colors.black                
             ),
           ),
-          Center(
+          loginForm(),
+          FutureBuilder(
+            future: testFuture,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {              
+              switch (snapshot.connectionState) {                
+                case ConnectionState.waiting:
+                  return Container(
+                    decoration: new BoxDecoration(
+                      color: Colors.white.withOpacity(0.8)
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+
+                default:
+                  return SizedBox.shrink();
+              }
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget loginForm() {
+    return Center(
             child: Form(
               key: _formKey,                            
               child: SingleChildScrollView(
@@ -139,9 +173,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             )
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

@@ -31,7 +31,7 @@ Future<LoginModel> requestLoginAPI(
           } else {
             saveCurrentLogin(null);
             showDialogSingleButton(context, "Unable to Login",
-                "You may have supplied an invalid 'Username' / 'Password' combination. Please try again or contact your support representative.");
+                "You may have supplied an invalid 'Username' / 'Password' combination.");
           }
         } catch (e) {
           showDialogSingleButton(context, "Application error", "Something went wrong.");
