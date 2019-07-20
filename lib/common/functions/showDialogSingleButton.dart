@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void showDialogSingleButton(BuildContext context, String title, String message, {String buttonLabel = 'OK', void Function() onPressed}) {
+Future<T> showDialogSingleButton<T>(BuildContext context, String title, String message, {String buttonLabel = 'OK', void Function() onPressed}) async {
   // flutter defined function
-  if (context == null) return; // nelze zavolat showDialog s null contextem
+  if (context == null) return null; // nelze zavolat showDialog s null contextem
   
   if (onPressed == null) {
     onPressed = () {
-      Navigator.of(context).pop();
+      Navigator.of(context, rootNavigator: true).pop();
     };
   }
 
-  showDialog(
-    context: context,
+  return await showDialog(
+    context: context,    
     builder: (BuildContext context) {
       // return object of type Dialog
       return AlertDialog(
@@ -21,7 +22,14 @@ void showDialogSingleButton(BuildContext context, String title, String message, 
           // usually buttons at the bottom of the dialog
           new FlatButton(
             child: new Text(buttonLabel),
-            onPressed: onPressed,
+            onPressed: () {
+              if (onPressed != null) {
+                onPressed();                
+              }
+              else {
+                Navigator.of(context, rootNavigator: true).pop();
+              }
+            },
           ),
         ],
       );

@@ -19,8 +19,7 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DefaultTabController(
+    return DefaultTabController(
         length: 2,
         child: PlatformScaffold(
           appBar: AppBar(            
@@ -36,8 +35,8 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
             children: [
               Column(
                 children: <Widget>[
-                  Flexible(
-                    child: MonitorsListWidget(),
+                  Expanded(
+                    child: MonitorsListWidget(),                    
                   ),
                   Container(
                       width: MediaQuery.of(context).size.width,
@@ -53,11 +52,10 @@ class _MonitorListScreenState extends State<MonitorListScreen> {
                         ))
                 ],
               ),
-              RecordsListWidget(50),
+              RecordsListWidget(50),              
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

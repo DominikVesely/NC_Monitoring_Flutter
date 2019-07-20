@@ -1,4 +1,6 @@
+import 'package:app/common/functions/showDialogSingleButton.dart';
 import 'package:app/config/routeHandlers.dart';
+import 'package:app/ui/loginScreen.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +15,9 @@ class Routes
   static void configureRoutes(Router router) {
     router.notFoundHandler = new Handler(
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-      print("ROUTE WAS NOT FOUND !!!");
-    });
+          showDialogSingleButton(context, 'Not found', 'Not found route. $params');
+          return LoginScreen();
+        });
     
     router.define(Routes.Login, handler: loginHandler);
 

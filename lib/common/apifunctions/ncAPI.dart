@@ -22,6 +22,30 @@ class NCApi {
     //return new Url("https://10.0.2.2:64966/api/");
   }
 
+  static Future<String> getAuthorizationHeader() async {
+    return 'Bearer ' + (await getToken());
+  }
+
+  static Future<Map<String, String>> getHeaders(HttpRequestDataType requestDataType) async {
+    var headers = {      
+      HttpHeaders.authorizationHeader: await getAuthorizationHeader()
+    };
+
+    switch (requestDataType) {      
+      case HttpRequestDataType.Json:
+        headers["Accept"] = "application/json";
+        headers["Content-type"] = "application/json";
+        break;
+
+      default:
+        headers["Accept"] = "application/x-www-form-urlencoded";
+        headers["Content-type"] = "application/x-www-form-urlencoded";
+    }
+
+    return headers;
+  }
+
+
   static Future<T> requestModelPUT<T>(BuildContext context, String path, {
     @required String key,
     @required T Function(Map) fromJson,
@@ -141,35 +165,15 @@ class NCApi {
         showDialogSingleButton(context, "Unauthenticated", "You have been logged out due to inactivity",
           buttonLabel: 'Login',
           onPressed: () => logout(context));
+      } else if (statusCode == 403) { // 403 vraci azure pokud se zastavi Web service
+        showDialogSingleButton(context, "API problem", "Server API was stopped.");
+      } else if (statusCode <= 499){
+        showDialogSingleButton(context, "Bad request ($statusCode)", "Something went wrong.");
       } else {
-        // Error
-        showDialogSingleButton(context, "Bad request", "Something went wrong.");
+        showDialogSingleButton(context, "Server problem ($statusCode)", "Server is unavailable.");
       }
 
       return false;
-  }
-
-  static Future<String> getAuthorizationHeader() async {
-    return 'Bearer ' + (await getToken());
-  }
-
-  static Future<Map<String, String>> getHeaders(HttpRequestDataType requestDataType) async {
-    var headers = {      
-      HttpHeaders.authorizationHeader: await getAuthorizationHeader()
-    };
-
-    switch (requestDataType) {      
-      case HttpRequestDataType.Json:
-        headers["Accept"] = "application/json";
-        headers["Content-type"] = "application/json";
-        break;
-
-      default:
-        headers["Accept"] = "application/x-www-form-urlencoded";
-        headers["Content-type"] = "application/x-www-form-urlencoded";
-    }
-
-    return headers;
   }
 
 }

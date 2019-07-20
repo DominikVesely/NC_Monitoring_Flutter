@@ -53,8 +53,7 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DefaultTabController(
+    return DefaultTabController(
         length: 2,
         child: PlatformScaffold(
           appBar: AppBar(
@@ -91,7 +90,6 @@ class _MonitorDetailScreenState extends State<MonitorDetailScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
