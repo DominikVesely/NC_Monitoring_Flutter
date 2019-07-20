@@ -1,4 +1,5 @@
 import 'package:app/common/apifunctions/switchMonitorEnableAPI.dart';
+import 'package:app/common/functions/showSnackBar.dart';
 import 'package:app/model.json/MonitorListModel.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,10 @@ class _MonitorListItemState extends State<MonitorListItem> {
             onChanged: (value) {
               switchMonitorEnableAPI(context, monitor.id, value).then((x) {
                 setState(() {
-                  monitor = x;
+                  monitor = x;                 
+                  final status = (x.enabled ? 'enabled' : 'disabled');
+                  showSnackBar(context, 
+                    text: 'Monitor was $status');
                 });
               });
             },
