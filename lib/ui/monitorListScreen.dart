@@ -2,7 +2,6 @@ import 'package:app/common/functions/logout.dart';
 import 'package:app/common/platform/platformScaffold.dart';
 import 'package:app/common/widgets/MonitorsListWidget.dart';
 import 'package:app/common/widgets/RecordsListWidget.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class MonitorListScreen extends StatefulWidget {
@@ -13,8 +12,6 @@ class MonitorListScreen extends StatefulWidget {
 class _MonitorListScreenState extends State<MonitorListScreen> {  
 
   String textValue = 'TextValue';
-
-  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
 
   @override
   Widget build(BuildContext context) {

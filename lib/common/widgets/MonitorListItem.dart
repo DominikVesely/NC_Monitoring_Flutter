@@ -42,7 +42,7 @@ class _MonitorListItemState extends State<MonitorListItem> {
                   monitor = x;                 
                   final status = (x.enabled ? 'enabled' : 'disabled');
                   showSnackBar(context, 
-                    text: 'Monitor was $status');
+                    text: 'Monitor was $status', type: SnackBarType.Success);
                 });
               });
             },

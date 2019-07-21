@@ -34,7 +34,7 @@ Future<LoginModel> requestLoginAPI(
                 "You may have supplied an invalid 'Username' / 'Password' combination.");
           }
         } catch (e) {
-          showDialogSingleButton(context, "Application error", "Something went wrong.");
+          showDialogSingleButton(context, "Application error", "Something went wrong. $e");
         }
 
         return null;
