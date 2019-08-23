@@ -46,10 +46,12 @@ class NCApi {
   }
 
 
-  static Future<T> requestModelPUT<T>(BuildContext context, String path, {
-    @required String key,
-    @required T Function(Map) fromJson,
-    Map<String, dynamic> data}) async {
+  static Future<T> requestModelPUT<T>(BuildContext context, String path, 
+    {
+      @required String key,
+      @required T Function(Map) fromJson,
+      Map<String, dynamic> data
+    }) async {
       
       return await requestModelFromJson(context, path, fromJson: fromJson,
         method: HttpMethod.PUT,
@@ -60,8 +62,13 @@ class NCApi {
         }); 
   }
 
-  static Future<List<T>> requestModelFromJsonList<T>(BuildContext context, String path, {@required T Function(Map) fromJson,
-      HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data}) async {
+  static Future<List<T>> requestModelFromJsonList<T>(BuildContext context, String path, 
+    {
+      @required T Function(Map) fromJson,
+      HttpRequestDataType requestDataType, 
+      HttpMethod method, 
+      Map<String, dynamic> data
+    }) async {
 
         return _requestModel(context, path, requestDataType, method, data, null, (response) {
           if (validateResponse(context, response)) {
@@ -72,17 +79,27 @@ class NCApi {
           }
 
           return [];
-        });
+        }, defaultValue: []);
   }
 
-  static Future<T> requestModelFromJson<T>(BuildContext context, String path, {@required T Function(Map) fromJson,
-      HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data}) async {
-
+  static Future<T> requestModelFromJson<T>(BuildContext context, String path, 
+    {
+      @required T Function(Map) fromJson,
+      HttpRequestDataType requestDataType, 
+      HttpMethod method, 
+      Map<String, dynamic> data
+    }
+    ) async {
         return _requestModel(context, path, requestDataType, method, data, fromJson, null);
   }
 
-  static Future<T> requestModelFromResponse<T>(BuildContext context, String path, { @required T Function(Response) fromResponse,
-      HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data}) async {
+  static Future<T> requestModelFromResponse<T>(BuildContext context, String path, 
+    { 
+    @required T Function(Response) fromResponse,
+    HttpRequestDataType requestDataType, 
+    HttpMethod method, 
+    Map<String, dynamic> data
+    }) async {
 
         return _requestModel(context, path, requestDataType, method, data, null, fromResponse);
   }
@@ -90,7 +107,8 @@ class NCApi {
   static Future<T> _requestModel<T>(BuildContext context, String path, 
     HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data,
     T Function(Map) fromJson, 
-    T Function(Response) fromResponse) async {
+    T Function(Response) fromResponse,
+    {T defaultValue}) async {
 
         if (fromJson == null && fromResponse == null) {
           throw new Exception("One parameter of 'fromJson' or 'onResponse' or 'fromJsonList' can not be null.");
@@ -149,7 +167,7 @@ class NCApi {
     //   return [] as T;
     // }
 
-    return null;
+    return defaultValue;
 }
 
   static bool validateResponse(BuildContext context, Response response) {
