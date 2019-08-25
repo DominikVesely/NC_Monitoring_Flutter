@@ -70,7 +70,7 @@ class NCApi {
       Map<String, dynamic> data
     }) async {
 
-        return _requestModel(context, path, requestDataType, method, data, null, (response) {
+        return _requestModel(context, path, requestDataType, method, data, null, (response) async {
           if (validateResponse(context, response)) {
             final jsonResponse = jsonDecode(response.body);
             Iterable list = jsonResponse;
@@ -89,13 +89,13 @@ class NCApi {
       HttpMethod method, 
       Map<String, dynamic> data
     }
-    ) async {
+    ) {
         return _requestModel(context, path, requestDataType, method, data, fromJson, null);
   }
 
   static Future<T> requestModelFromResponse<T>(BuildContext context, String path, 
     { 
-    @required T Function(Response) fromResponse,
+    @required Future<T> Function(Response) fromResponse,
     HttpRequestDataType requestDataType, 
     HttpMethod method, 
     Map<String, dynamic> data
@@ -107,7 +107,7 @@ class NCApi {
   static Future<T> _requestModel<T>(BuildContext context, String path, 
     HttpRequestDataType requestDataType, HttpMethod method, Map<String, dynamic> data,
     T Function(Map) fromJson, 
-    T Function(Response) fromResponse,
+    Future<T> Function(Response) fromResponse,
     {T defaultValue}) async {
 
         if (fromJson == null && fromResponse == null) {

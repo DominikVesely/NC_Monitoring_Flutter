@@ -6,5 +6,6 @@ Future<String> getToken() async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
 
   String getToken = preferences.getString("LastToken");  
+  
   return getToken;
 }

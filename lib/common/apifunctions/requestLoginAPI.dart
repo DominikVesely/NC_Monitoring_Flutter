@@ -19,17 +19,17 @@ Future<LoginModel> requestLoginAPI(
       method: HttpMethod.POST,
       requestDataType: HttpRequestDataType.Json,
       data: data,
-      fromResponse: (response) {
+      fromResponse: (response) async {
         try {    
           if (response.statusCode == 200) {
             final responseJson = jsonDecode(response.body);
-            saveCurrentLogin(responseJson);
+            await saveCurrentLogin(responseJson);
 
             Navigator.of(context).pushReplacementNamed(Routes.Home);
             return LoginModel.fromJson(responseJson);
 
           } else {
-            saveCurrentLogin(null);
+            await saveCurrentLogin(null);
             showDialogSingleButton(context, "Unable to Login",
                 "You may have supplied an invalid 'Username' / 'Password' combination.");
           }
