@@ -11,7 +11,7 @@ class MonitorListItem extends StatefulWidget {
   @override
   _MonitorListItemState createState() {
     var state = _MonitorListItemState();
-    
+
     state.monitor = monitor;
 
     return state;
@@ -19,11 +19,26 @@ class MonitorListItem extends StatefulWidget {
 }
 
 class _MonitorListItemState extends State<MonitorListItem> {
-
   MonitorListModel monitor;
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
+    Color textColor;
+    switch (monitor.statusId) {
+      case 1: // OK
+        textColor = Colors.green;
+        break;
+      case 2: // InActive
+        textColor = Colors.grey;
+        break;
+      case 3: // Error
+        textColor = Colors.red;
+        break;
+      default:
+        textColor = Colors.black;
+        break;
+    }
+
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -32,6 +47,9 @@ class _MonitorListItemState extends State<MonitorListItem> {
             child: Text(
               monitor.name,
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: textColor,
+              ),
             ),
           ),
           Switch(
@@ -39,10 +57,10 @@ class _MonitorListItemState extends State<MonitorListItem> {
             onChanged: (value) {
               switchMonitorEnableAPI(context, monitor.id, value).then((x) {
                 setState(() {
-                  monitor = x;                 
+                  monitor = x;
                   final status = (x.enabled ? 'enabled' : 'disabled');
-                  showSnackBar(context, 
-                    text: 'Monitor was $status', type: SnackBarType.Success);
+                  showSnackBar(context,
+                      text: 'Monitor was $status', type: SnackBarType.Success);
                 });
               });
             },
