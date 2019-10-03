@@ -25,12 +25,12 @@ class _MonitorListItemState extends State<MonitorListItem> {
   Widget build(BuildContext context) {
     Color textColor;
     switch (monitor.statusId) {
-      case 1: // OK
+      case 1: // InActive
+        textColor = Colors.grey;        
+        break;
+      case 2: // OK
         textColor = Colors.green;
-        break;
-      case 2: // InActive
-        textColor = Colors.grey;
-        break;
+        break;      
       case 3: // Error
         textColor = Colors.red;
         break;
