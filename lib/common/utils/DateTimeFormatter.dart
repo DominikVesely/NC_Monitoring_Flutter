@@ -7,16 +7,16 @@ class DateTimeFormatter
 
   static shortDateTime(DateTime date)
   {
-    return dateFormatter.format(date) + ' ' + timeFormatter.format(date);
+    return date==null ? "" : dateFormatter.format(date) + ' ' + timeFormatter.format(date);
   }
 
   static shortDate(DateTime date)
   {
-    return dateFormatter.format(date);
+    return date==null ? "" : dateFormatter.format(date);
   }
 
   static shortTime(DateTime date)
   {
-    return timeFormatter.format(date);
+    return date==null ? "" : timeFormatter.format(date);
   }
 }
