@@ -24,7 +24,7 @@ class RecordListModel {
     monitorId = json['MonitorId'];
     monitorName = json['MonitorName'];
     startDate = const DateTimeConverter().fromJson(json['StartDate']);
-    endDate = const DateTimeConverter().fromJson(json['EndDate']);
+    endDate = json['EndDate']==null ? null : const DateTimeConverter().fromJson(json['EndDate']);
     note = json['Note'];
     groupBy = const DateTimeConverter().fromJson(json['GroupBy']);
   }
@@ -35,7 +35,7 @@ class RecordListModel {
     data['MonitorId'] = this.monitorId;
     data['MonitorName'] = this.monitorName;
     data['StartDate'] = const DateTimeConverter().toJson(this.startDate);
-    data['EndDate'] = const DateTimeConverter().toJson(this.endDate);
+    data['EndDate'] = this.endDate==null ? null : const DateTimeConverter().toJson(this.endDate);
     data['Note'] = this.note;
     data['GroupBy'] = const DateTimeConverter().toJson(this.groupBy);
     return data;
